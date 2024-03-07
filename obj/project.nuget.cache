@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "BMEHZ3/cav+S6LU87dLuYEq4S5REZSQbaAxFvPVXAiOzLeVzLhQXXNo6wImcudOpwwZSJlczMEUjnxYK8gZZbA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\luil\\Documents\\games\\DvB\\Movement.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\luil\\.nuget\\packages\\raylib-cs\\4.0.0.1\\raylib-cs.4.0.0.1.nupkg.sha512",
+    "C:\\Users\\luil\\.nuget\\packages\\system.numerics.vectors\\4.5.0\\system.numerics.vectors.4.5.0.nupkg.sha512",
+    "C:\\Users\\luil\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.26\\microsoft.netcore.app.ref.6.0.26.nupkg.sha512",
+    "C:\\Users\\luil\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.26\\microsoft.windowsdesktop.app.ref.6.0.26.nupkg.sha512",
+    "C:\\Users\\luil\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.26\\microsoft.aspnetcore.app.ref.6.0.26.nupkg.sha512",
+    "C:\\Users\\luil\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.26\\microsoft.netcore.app.host.win-x64.6.0.26.nupkg.sha512"
+  ],
+  "logs": []
+}
