@@ -7,7 +7,7 @@ namespace Movement
 {
     class River : SpriteNode
     {
-        public River() : base("")
+        public River() : base("resources/river.png")
         {
 			
 		    Position = new Vector2(Settings.ScreenSize.X / 2, Settings.ScreenSize.Y / 2);

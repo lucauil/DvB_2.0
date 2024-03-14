@@ -7,15 +7,12 @@ namespace Movement
 {
 	class Log : MoverNode
 	{
-		public int health;
-		public int MaxHealth;
+	
         
 
         public Log() : base("resources/log.png")
 		{
 			Position = new Vector2(0, 0);
-			MaxHealth = 1;
-			health = MaxHealth;
 		}
 		
 
@@ -35,18 +32,6 @@ namespace Movement
 		Laneswitch function, checks if colliding and checks if lane is free.
 			then switch lanes
 		*/
-		public void Damage(int amount)
-		{
-			health -= amount;
-		}
-
-		public bool IsAlive()
-		{
-			if (health <= 0)
-			{
-				return false;
-			}
-			return true;
-		}
+		
 	}
 }

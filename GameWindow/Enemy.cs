@@ -34,7 +34,7 @@ namespace Movement
 		public Enemy() : base("resources/bibarel.png")
 		{
 			
-			Position = new Vector2(600, 50);
+			Position = new Vector2(50, 50);
 			MaxHealth = 1;
 			health = MaxHealth;
 			Rotation = 1.55;
@@ -43,7 +43,7 @@ namespace Movement
 		// Update is called every frame
 		public override void Update(float deltaTime)
 		{
-			Move(deltaTime);
+			//Move(deltaTime);
 			//WrapEdges();
 			//BounceEdges();
 		}

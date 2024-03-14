@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Movement
-build_property.ProjectDir = C:\Users\luil\Documents\games\DvB\
+build_property.ProjectDir = C:\Users\luil\Documents\GitHub\DvB_2.0\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\luil\\Documents\\games\\DvB\\Movement.csproj": {}
+    "C:\\Users\\luil\\Documents\\GitHub\\DvB_2.0\\Movement.csproj": {}
   },
   "projects": {
-    "C:\\Users\\luil\\Documents\\games\\DvB\\Movement.csproj": {
+    "C:\\Users\\luil\\Documents\\GitHub\\DvB_2.0\\Movement.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\luil\\Documents\\games\\DvB\\Movement.csproj",
+        "projectUniqueName": "C:\\Users\\luil\\Documents\\GitHub\\DvB_2.0\\Movement.csproj",
         "projectName": "Movement",
-        "projectPath": "C:\\Users\\luil\\Documents\\games\\DvB\\Movement.csproj",
+        "projectPath": "C:\\Users\\luil\\Documents\\GitHub\\DvB_2.0\\Movement.csproj",
         "packagesPath": "C:\\Users\\luil\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\luil\\Documents\\games\\DvB\\obj\\",
+        "outputPath": "C:\\Users\\luil\\Documents\\GitHub\\DvB_2.0\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\luil\\AppData\\Roaming\\NuGet\\NuGet.Config",
