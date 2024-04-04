@@ -1,13 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
-using System.Drawing;
-using System.Dynamic;
-using System.Linq;
 using System.Numerics;
-using System.Reflection.Metadata;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
 using Raylib_cs;
 
 namespace Movement
@@ -17,21 +10,23 @@ namespace Movement
 		// private fields
 		private Player player;
 		private River river;
-		private Enemy enemy;
-		private Log log;
+		// private Enemy enemy;
+		
 		
 		 List<Arrow> arrows;
 		 List<Log> logs;
 		 List<Enemy> enemies;
 		private GameOver gameover;
 		private GameClear gameclear;
-		private PlayerHP playerhp;
-		private EnemyHP enemyhp;
+		
+		
 		private Column column = new Column();
  
 		int speed = 200;
+		bool GameIsOver;
 		
-	
+		Random rand = new Random();
+
 		private float arrowTimer = 0.0f;
 		private float zTimer = 0.0f;
 		private float logTimer = 0.0f;
@@ -39,84 +34,28 @@ namespace Movement
 		// constructor + call base constructors
 		public GameScene(String t) : base(t)
 		{
-			
+			arrows = new List<Arrow>();
 			Start();
 		}
 
 		// Update is called every frame
 		public override void Update(float deltaTime)
 		{
-			if (!player.IsAlive()) 
-			{
-				AddChild(gameover);
-				if (Raylib.IsKeyDown(KeyboardKey.KEY_R))
-				{		
-					Restart();
-					Start();
-				}
-				return;
-			}
-
-			if (!enemy.IsAlive()) 
-			{
-				AddChild(gameclear);
-				if (Raylib.IsKeyDown(KeyboardKey.KEY_R))
-				{		
-					Restart();
-					Start();
-				}
-				return;
-			}
+			
 
 			
 
+			
+			Gamestate();
 			base.Update(deltaTime);
 			HandleInput(deltaTime);
 			Zmove(deltaTime);
 			column.DrawGrid();
-			InitBeavers();
-			
+			Collum();
 			Logplacer(deltaTime);
-
-			// loop door lijst met lazers
-			// check distance met player
-			for (int i = logs.Count-1; i >= 0; i--)
-			{
-				if (CalculateDistance(logs[i].Position, player.Position) < 90) //navragen hoe ik onderscheid kan maken tussen de x en y positie
-				{
-					
-					RemoveChild(logs[i]);
-					logs.RemoveAt(i);
-					player.Damage(1);
-				}
-			}
-
-			// for (int i = logs.Count-1; i >= 0; i--) navragen hoe er 2 lijsten tegelijk bekeken worden
-			// {
-			// 	if (CalculateDistance(logs[i].Position, arrows[i].Position) < 40)
-			// 	{
-					
-			// 		RemoveChild(logs[i]);
-			// 		logs.RemoveAt(i);
-			// 		RemoveChild(arrows[i]);
-			// 		arrows.RemoveAt(1);
-			// 	}
-			// }
-
-			for (int i = arrows.Count-1; i >= 0; i--)
-			{
-				if (CalculateDistance(arrows[i].Position, enemy.Position) < 90)
-				{
-					Console.WriteLine("boom");
-					RemoveChild(arrows[i]);
-					arrows.RemoveAt(i);
-					enemy.Damage(10);
-				}
-			}
-
-			
-			playerhp.Scale.X = player.health / 10;
-			
+		
+			Collision();
+		
 		}
 
 		public void Drawcollum() //later verder
@@ -143,7 +82,82 @@ namespace Movement
 			}
 		}
 
-		
+		public void Collision() //navragen bij rik of maik
+		{
+			// loop door lijst met lazers
+			// check distance met player
+			for (int i = logs.Count-1; i >= 0; i--)
+			{
+				if (CalculateDistance(logs[i].Position, player.Position) < 90) //navragen hoe ik onderscheid kan maken tussen de x en y positie
+				{
+					
+					// RemoveChild(logs[i]);
+					// logs.RemoveAt(i);
+					player.Damage(1);
+				}
+
+				// if (CalculateDistance(logs[i].Position, player.Position) < 200) //navragen hoe ik onderscheid kan maken tussen de x en y positie
+				// {
+					
+					
+				// 	if(player.Position.X < log.Position.X)
+				// 	{
+				// 		player.Position.X = log.Position.X + 20;
+				// 	}
+				// 	if(player.Position.X > log.Position.X)
+				// 	{
+				// 		player.Position.X = log.Position.X + 20;
+				// 	}
+				//}
+			}
+
+			for (int a = arrows.Count-1; a >= 0; a--) //samenvoegen met vijand en speler collision
+			{
+				for (int l = logs.Count-1; l >= 0; l--)
+				{
+					if (CalculateDistance(logs[l].Position, arrows[a].Position) < 40)
+					{
+						
+						
+						RemoveChild(arrows[a]);
+						arrows.RemoveAt(a);
+						RemoveChild(logs[l]);
+						logs.RemoveAt(l);
+					}
+				}
+			}
+
+			for (int a = arrows.Count-1; a >= 0; a--) 
+			{
+				for (int e = enemies.Count-1; e >= 0; e--) 
+				{
+					if (CalculateDistance(enemies[e].Position, arrows[a].Position) < 40)
+					{
+						// Console.WriteLine($"enemy {e}");
+						// Console.WriteLine($"arrow {a}");
+						RemoveChild(enemies[e]);
+						enemies.RemoveAt(e);
+						// RemoveChild(arrows[a]);
+						// if (arrows.Count > 0) 
+						// {
+						// 	arrows.RemoveAt(a);
+						// }
+					}
+				}
+			}
+
+			// bit of A cleanup hack. Ew!
+			for (int i = 0; i < arrows.Count; i++)
+			{
+				if (arrows[i].Position.Y < -100)
+				{
+					RemoveChild(arrows[i]);
+					arrows.RemoveAt(i);
+				}
+			}
+
+			
+		}
 
 		private void HandleInput(float deltaTime) 
 		{
@@ -153,7 +167,7 @@ namespace Movement
 				Start();
 			}
 			
-			// if (gameIsOver) return;
+			if (GameIsOver) return;
 			if (Raylib.IsKeyDown(KeyboardKey.KEY_A) ||Raylib.IsKeyDown(KeyboardKey.KEY_LEFT))
 			{
 				player.Position.X -= speed*deltaTime;
@@ -218,31 +232,32 @@ namespace Movement
 			}			
 		}
 
-		public void Logplacer(float deltaTime) //komt later
+		public void Logplacer(float deltaTime) //zo snel als mogelijk doen
 		{
-			// planets = new List<Planet>();
-			// for (int i = 0; i < 15; i++)
-			// {
-			// 	Planet p = new Planet();
-			// 	planets.Add(p);
-			// 	AddChild(p);
-
-			// 	p.Position.X = rand.Next(0, 1200);
-			// 	p.Position.Y = rand.Next(0, 650);
-			// }
+			
 
 
-			// if (gameIsOver) return;
+			if (GameIsOver) return;
 			logTimer += deltaTime;
 			if (logTimer > 2.0f)
 			{
-				Log l = enemy.Shoot();
-				if (l != null)
-				{
-					AddChild(l);
-					logs.Add(l);
-				}
-				logTimer = 0.0f;
+				// Log l = enemy.Shoot();
+				// if (l != null)
+				// {
+				// 	AddChild(l);
+				// 	logs.Add(l);
+				// }
+				//logTimer = 0.0f;
+				// size_t numerOfBeavers = enemies.size(); nog mee bezig gaan
+				// size_t randomBeaverIndex = rand()%numerOfBeavers;
+
+				// Treelog* log = new Treelog();
+				// //float xpos = (rand()%10) * 128 + 64;
+				// float xpos = enemies[randomBeaverIndex]->position.x;
+				// log.position = Vector2(xpos, 50);
+				// addChild(log);
+				// logs.Add(l);
+				// logTimer = 0.0f;
 			}
 		}
 
@@ -257,81 +272,57 @@ namespace Movement
 
 		public void Gamestate()//komt later verder
 		{
-			// int numberoflogsonthebottom = 0;
-			// std::vector<int> logpos = std::vector<int>();
-			// logpos.resize(10);
-			// for (size_t i = 0; i < xpositions.size(); i++)
-			// {
-			// 	for (size_t tl = 0; tl < treelogs.size(); tl++)
-			// 	{
-			// 		if (treelogs[tl]->position.x == xpositions[i] && 
-			// 			(treelogs[tl]->position.y >= SHEIGHT - (treelogs[tl]->sprite()->height() / 2))
-			// 		)
-			// 		{
-			// 			// treelog on this position.
-			// 			// possibly game over
-			// 			// numberoflogsonthebottom++;
-			// 			logpos[i] = 1;
-			// 		}
-			// 		else
-			// 		{
-			// 			// no treelog on this position
-			// 			// definitely not game over
-			// 		}
-			// 	}
-				
-				
-			// 	int sum = 0;
-			// 	for (size_t i = 0; i < logpos.size(); i++)
-			// 	{
-			// 		sum += logpos[i];
-			// 	}
-			// 	if (sum == 10)
-			// 	{
-			// 		gameIsOver = true;
-			// 		gameText->message("GAME OVER",RED);
-			// 	}
-				
-			// if (!player.IsAlive()) 
-			// {
-			// 	AddChild(gameover);
-			// 	if (Raylib.IsKeyDown(KeyboardKey.KEY_R))
-			// 	{
-			// 		RemoveChild(player);
-			// 		RemoveChild(enemy);
-			// 		RemoveChild(playerhp);
-			// 		RemoveChild(enemyhp);
-			// 		RemoveChild(gameover);
-			// 		PlanetRemover();
-			// 		Restart();
-			// 	}
-			// 	return;
-			// }
+            // int numberoflogsonthebottom = 0;
+            // std::vector<int> logpos = std::vector<int>();
+            // logpos.resize(10);
+            // for (size_t i = 0; i < xpositions.size(); i++)
+            // {
+            // 	for (size_t tl = 0; tl < treelogs.size(); tl++)
+            // 	{
+            // 		if (treelogs[tl]->position.x == xpositions[i] && 
+            // 			(treelogs[tl]->position.y >= SHEIGHT - (treelogs[tl]->sprite()->height() / 2))
+            // 		)
+            // 		{
+            // 			// treelog on this position.
+            // 			// possibly game over
+            // 			// numberoflogsonthebottom++;
+            // 			logpos[i] = 1;
+            // 		}
+            // 		else
+            // 		{
+            // 			// no treelog on this position
+            // 			// definitely not game over
+            // 		}
+            // 	}
 
-			
 
-			// if (enemies.empty()) 
-			// {
-			// 	AddChild(gameclear);
-				// if (Raylib.IsKeyDown(KeyboardKey.KEY_R))
-				// {
-				// 	RemoveChild(player);
-				// 	RemoveChild(enemy);
-				// 	RemoveChild(playerhp);
-				// 	RemoveChild(enemyhp);
-				// 	RemoveChild(gameclear);
-				// 	PlanetRemover();
-				// 	Restart();
-				// }
-				// return;
-			// }
+            // 	int sum = 0;
+            // 	for (size_t i = 0; i < logpos.size(); i++)
+            // 	{
+            // 		sum += logpos[i];
+            // 	}
+            // 	if (logs.count == 10)
+            // 	{
+            // 		gameIsOver = true;
+            // 		gameText->message("GAME OVER",RED);
+            // 	}
 
-			// if (!enemy.IsAlive()) //veranderd nog wanneer het een lijst is
-			// {
-			// 	AddChild(gameclear);
+            
+			if (!player.IsAlive()) 
+			{
+				AddChild(gameover);
 				
-			// 	return;
-			// }
+				GameIsOver = true;
+			}
+
+
+            if (enemies.Count == 0) //klaar
+            {
+				AddChild(gameclear);
+				
+				GameIsOver = true;
+			}
+
 
 		}
 
@@ -343,34 +334,38 @@ namespace Movement
 		void Start()
 		{
 			//start the game
-			
+			GameIsOver = false;
 			river = new River();
 			AddChild(river);
 			player = new Player();
 			AddChild(player);
-			enemy = new Enemy();
-			AddChild(enemy);
 			arrows = new List<Arrow>();
 			logs = new List<Log>();
+			enemies = new List<Enemy>();
 			gameover = new GameOver();
 			gameclear = new GameClear();
-			playerhp = new PlayerHP();
-			AddChild(playerhp);
-			enemyhp = new EnemyHP();
-			AddChild(enemyhp);
+			enemies = new List<Enemy>();
+			
+			for (int i = 0; i < 10; i++) 
+			{
+				Enemy e = new Enemy();
+				float xpos = i * 128 + 64;
+				// e.Position.X = rand.Next(0, 1200);
+				e.Position.X = xpos;
+				enemies.Add(e);
+				AddChild(e);
+			}
 		}
 
 		void Restart()
 		{
 			RemoveChild(player);
-			RemoveChild(enemy);
-			RemoveChild(playerhp);
-			RemoveChild(enemyhp);
 			RemoveChild(gameclear);
+			RemoveChild(gameover);
 			PlanetRemover();
 		}
 
-		private void InitBeavers() //navragen bij rick
+		private void Collum() //navragen bij rik
 		{
 			int gridSize = 10;
 			int cellSize = 128;
@@ -388,6 +383,12 @@ namespace Movement
 			// }
 
 			// AddChild
+			//Ypos = height
+
+
 		}
+
+		
+	
 	}
 } // namespace

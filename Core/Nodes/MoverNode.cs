@@ -29,6 +29,7 @@ namespace Movement
 			Velocity = new Vector2(0, 0);
 			Acceleration = new Vector2(0, 0);
 			Mass = 1.0f;
+			maxSpeed = 10.0f;
 		}
 
 		public override void Update(float deltaTime)

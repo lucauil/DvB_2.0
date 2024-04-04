@@ -13,7 +13,7 @@ namespace Movement
 	class MenuScene : SceneNode
 	{
 		// private fields
-		private Core core;
+		// private Core core;
 		private List<MenuButton> menubuttons;
 		// constructor + call base constructors
 		public MenuScene(String t) : base(t)
