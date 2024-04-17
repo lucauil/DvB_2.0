@@ -10,7 +10,8 @@ namespace Movement
 		// private fields
 		private Player player;
 		private River river;
-		// private Enemy enemy;
+		private Enemy enemy;
+		
 		
 		
 		 List<Arrow> arrows;
@@ -34,7 +35,7 @@ namespace Movement
 		// constructor + call base constructors
 		public GameScene(String t) : base(t)
 		{
-			arrows = new List<Arrow>();
+			
 			Start();
 		}
 
@@ -84,69 +85,65 @@ namespace Movement
 
 		public void Collision() //navragen bij rik of maik
 		{
+			List<Log> logsToRemove = new List<Log>();
+			List<Arrow> arrowsToRemove = new List<Arrow>();
+			
+			
 			// loop door lijst met lazers
 			// check distance met player
-			for (int i = logs.Count-1; i >= 0; i--)
+			for (int l = logs.Count-1; l >= 0; l--)
 			{
-				if (CalculateDistance(logs[i].Position, player.Position) < 90) //navragen hoe ik onderscheid kan maken tussen de x en y positie
+				if (CalculateDistance(logs[l].Position, player.Position) < 90) //navragen hoe ik onderscheid kan maken tussen de x en y positie
 				{
-					
-					// RemoveChild(logs[i]);
-					// logs.RemoveAt(i);
-					player.Damage(1);
-				}
-
-				// if (CalculateDistance(logs[i].Position, player.Position) < 200) //navragen hoe ik onderscheid kan maken tussen de x en y positie
-				// {
-					
-					
-				// 	if(player.Position.X < log.Position.X)
-				// 	{
-				// 		player.Position.X = log.Position.X + 20;
-				// 	}
-				// 	if(player.Position.X > log.Position.X)
-				// 	{
-				// 		player.Position.X = log.Position.X + 20;
-				// 	}
-				//}
-			}
-
-			for (int a = arrows.Count-1; a >= 0; a--) //samenvoegen met vijand en speler collision
-			{
-				for (int l = logs.Count-1; l >= 0; l--)
-				{
-					if (CalculateDistance(logs[l].Position, arrows[a].Position) < 40)
-					{
-						
-						
-						RemoveChild(arrows[a]);
-						arrows.RemoveAt(a);
 						RemoveChild(logs[l]);
 						logs.RemoveAt(l);
-					}
+						player.Damage(1);
 				}
 			}
 
-			for (int a = arrows.Count-1; a >= 0; a--) 
+			// Example for collision with logs
+				for (int a = arrows.Count - 1; a >= 0; a--)
+				{
+					for (int l = logs.Count - 1; l >= 0; l--)
+					{
+						if (CalculateDistance(arrows[a].Position, logs[l].Position) < 60)
+						{
+							// Mark for removal
+							logsToRemove.Add(logs[l]);
+							arrowsToRemove.Add(arrows[a]);
+						}
+					}
+				}
+
+
+				// Remove marked items after iteration
+				foreach (var log in logsToRemove)
+				{
+					logs.Remove(log);
+					RemoveChild(log); // Assuming RemoveChild is a method to remove from the game scene
+				}
+
+				foreach (var arrow in arrowsToRemove)
+				{
+					arrows.Remove(arrow);
+					RemoveChild(arrow); // Assuming RemoveChild is a method to remove from the game scene
+				}
+
+				
+
+			for (int a = arrows.Count - 1; a >= 0; a--)
 			{
 				for (int e = enemies.Count-1; e >= 0; e--) 
-				{
-					if (CalculateDistance(enemies[e].Position, arrows[a].Position) < 40)
 					{
-						// Console.WriteLine($"enemy {e}");
-						// Console.WriteLine($"arrow {a}");
-						RemoveChild(enemies[e]);
-						enemies.RemoveAt(e);
-						// RemoveChild(arrows[a]);
-						// if (arrows.Count > 0) 
-						// {
-						// 	arrows.RemoveAt(a);
-						// }
+						if (CalculateDistance(enemies[e].Position, arrows[a].Position) < 40)
+						{
+							RemoveChild(enemies[e]);
+							enemies.RemoveAt(e);
+						}
 					}
-				}
 			}
 
-			// bit of A cleanup hack. Ew!
+			// bit of A cleanup hack.
 			for (int i = 0; i < arrows.Count; i++)
 			{
 				if (arrows[i].Position.Y < -100)
@@ -232,42 +229,56 @@ namespace Movement
 			}			
 		}
 
-		public void Logplacer(float deltaTime) //zo snel als mogelijk doen
+		public void Logplacer(float deltaTime) //na vragen hoe 1 stam per door 1 bever gegooid wordt 
 		{
-			
+
 
 
 			if (GameIsOver) return;
 			logTimer += deltaTime;
 			if (logTimer > 2.0f)
 			{
-				// Log l = enemy.Shoot();
-				// if (l != null)
+			
+				// Log s = enemy.Shoot();
+				// if (s != null)
 				// {
-				// 	AddChild(l);
-				// 	logs.Add(l);
+				// 	AddChild(s);
+				// 	logs.Add(s);
 				// }
-				//logTimer = 0.0f;
-				// size_t numerOfBeavers = enemies.size(); nog mee bezig gaan
-				// size_t randomBeaverIndex = rand()%numerOfBeavers;
+				
+			
 
-				// Treelog* log = new Treelog();
-				// //float xpos = (rand()%10) * 128 + 64;
-				// float xpos = enemies[randomBeaverIndex]->position.x;
-				// log.position = Vector2(xpos, 50);
-				// addChild(log);
-				// logs.Add(l);
-				// logTimer = 0.0f;
+				// int numerOfBeavers = enemies.Capacity;
+				// int randomBeaverIndex = Random()%numerOfBeavers;
+
+				for (int i = 0; i < 10; i++)
+				{	
+					
+					if (rand.Next(0, 10) == 0)
+					{
+						Log l = new Log();
+						float xpos = i * 128 + 64;
+						l.Position.X = xpos;
+						l.Position.Y = 80;
+						// Console.WriteLine($"loglist {i}");
+						// Console.WriteLine($"log {i}");
+						//Console.WriteLine($"Attempting to add log to index {i}");
+						if (i < logs.Count)
+						{
+							AddChild(l);
+							logs.Add(l);
+							//Console.WriteLine($"Log added successfully.");
+						}
+						else
+						{
+							//Console.WriteLine($"Error: Attempted to add log to non-existent index {i}");
+						}
+						AddChild(l);
+						logs.Add(l);
+					}
+				}
+				logTimer = 0.0f;
 			}
-		}
-
-		public void PlanetRemover() //kan nog van pas komen
-		{
-			// for (int i = 0; i < planets.Count; i++)
-			// {
-			// 	RemoveChild(planets[i]);
-			// }
-			// planets.Clear();
 		}
 
 		public void Gamestate()//komt later verder
@@ -344,7 +355,7 @@ namespace Movement
 			enemies = new List<Enemy>();
 			gameover = new GameOver();
 			gameclear = new GameClear();
-			enemies = new List<Enemy>();
+			;
 			
 			for (int i = 0; i < 10; i++) 
 			{
@@ -362,7 +373,6 @@ namespace Movement
 			RemoveChild(player);
 			RemoveChild(gameclear);
 			RemoveChild(gameover);
-			PlanetRemover();
 		}
 
 		private void Collum() //navragen bij rik
