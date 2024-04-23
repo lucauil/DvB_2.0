@@ -11,7 +11,7 @@ namespace Movement
         {
 			
 		    Position = new Vector2(Settings.ScreenSize.X / 2, Settings.ScreenSize.Y / 2);
-            //TextureSize = new Vector2(Settings.ScreenSize.X / 2, Settings.ScreenSize.Y / 2); later mee verder
+            
 		}
 	}
 }

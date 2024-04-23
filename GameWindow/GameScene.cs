@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Raylib_cs;
 
@@ -11,15 +12,14 @@ namespace Movement
 		private Player player;
 		private River river;
 		private Enemy enemy;
-		
+		private GameOver gameover;
+		private GameClear gameclear;
 		
 		
 		 List<Arrow> arrows;
 		 List<Log> logs;
 		 List<Enemy> enemies;
-		private GameOver gameover;
-		private GameClear gameclear;
-		
+		List<int> xpostions;
 		
 		private Column column = new Column();
  
@@ -31,9 +31,10 @@ namespace Movement
 		private float arrowTimer = 0.0f;
 		private float zTimer = 0.0f;
 		private float logTimer = 0.0f;
+        private List<int> xpositions;
 
-		// constructor + call base constructors
-		public GameScene(String t) : base(t)
+        // constructor + call base constructors
+        public GameScene(String t) : base(t)
 		{
 			
 			Start();
@@ -54,7 +55,6 @@ namespace Movement
 			column.DrawGrid();
 			Collum();
 			Logplacer(deltaTime);
-		
 			Collision();
 		
 		}
@@ -239,17 +239,11 @@ namespace Movement
 			if (logTimer > 2.0f)
 			{
 			
-				// Log s = enemy.Shoot();
-				// if (s != null)
-				// {
-				// 	AddChild(s);
-				// 	logs.Add(s);
-				// }
 				
 			
 
-				// int numerOfBeavers = enemies.Capacity;
-				// int randomBeaverIndex = Random()%numerOfBeavers;
+				
+				int randomBeaverIndex = rand.Next(0, enemies.Count);
 
 				for (int i = 0; i < 10; i++)
 				{	
@@ -257,21 +251,20 @@ namespace Movement
 					if (rand.Next(0, 10) == 0)
 					{
 						Log l = new Log();
-						float xpos = i * 128 + 64;
+						float xpos = enemies[randomBeaverIndex].Position.X;
+						// float xpos = i * 128 + 64;
 						l.Position.X = xpos;
 						l.Position.Y = 80;
-						// Console.WriteLine($"loglist {i}");
-						// Console.WriteLine($"log {i}");
-						//Console.WriteLine($"Attempting to add log to index {i}");
+						
 						if (i < logs.Count)
 						{
-							AddChild(l);
-							logs.Add(l);
-							//Console.WriteLine($"Log added successfully.");
+							// AddChild(l);
+							// logs.Add(l);
+							
 						}
 						else
 						{
-							//Console.WriteLine($"Error: Attempted to add log to non-existent index {i}");
+							
 						}
 						AddChild(l);
 						logs.Add(l);
@@ -281,60 +274,58 @@ namespace Movement
 			}
 		}
 
-		public void Gamestate()//komt later verder
+
+
+
+		public void Gamestate()
 		{
-            // int numberoflogsonthebottom = 0;
-            // std::vector<int> logpos = std::vector<int>();
-            // logpos.resize(10);
-            // for (size_t i = 0; i < xpositions.size(); i++)
-            // {
-            // 	for (size_t tl = 0; tl < treelogs.size(); tl++)
-            // 	{
-            // 		if (treelogs[tl]->position.x == xpositions[i] && 
-            // 			(treelogs[tl]->position.y >= SHEIGHT - (treelogs[tl]->sprite()->height() / 2))
-            // 		)
-            // 		{
-            // 			// treelog on this position.
-            // 			// possibly game over
-            // 			// numberoflogsonthebottom++;
-            // 			logpos[i] = 1;
-            // 		}
-            // 		else
-            // 		{
-            // 			// no treelog on this position
-            // 			// definitely not game over
-            // 		}
-            // 	}
+			// Check if there are 10 logs in a row at a specified position
+			if (CheckLogsInRow())
+			{
+				GameIsOver = true;
+				AddChild(gameover);
+				return; // Exit the method early to avoid further checks
+			}
 
+			// Existing game state checks
+			// if (logs.Count == 10)
+			// {
+			// 	GameIsOver = true;
+			// 	AddChild(gameover);
+			// 	return; // Exit the method early to avoid further checks
+			// }
 
-            // 	int sum = 0;
-            // 	for (size_t i = 0; i < logpos.size(); i++)
-            // 	{
-            // 		sum += logpos[i];
-            // 	}
-            // 	if (logs.count == 10)
-            // 	{
-            // 		gameIsOver = true;
-            // 		gameText->message("GAME OVER",RED);
-            // 	}
-
-            
 			if (!player.IsAlive()) 
 			{
 				AddChild(gameover);
-				
 				GameIsOver = true;
 			}
 
-
-            if (enemies.Count == 0) //klaar
-            {
+			if (enemies.Count == 0) //klaar
+			{
 				AddChild(gameclear);
-				
 				GameIsOver = true;
 			}
+		}
 
+		private bool CheckLogsInRow()
+		{
+			// Define the position where the logs should be in a row
+			float targetX = 700; // Replace with the actual X-coordinate
+			float tolerance = 10; // Tolerance for the logs' positions
 
+			// Count the number of logs within the tolerance of the target X-coordinate
+			int logsInRow = 0;
+			foreach (var log in logs)
+			{
+				if (Math.Abs(log.Position.X - targetX) <= tolerance)
+				{
+					logsInRow++;
+				}
+			}
+
+			// Check if there are 10 logs in a row
+			return logsInRow >= 10;
 		}
 
 		private float CalculateDistance(Vector2 a, Vector2 b)
@@ -355,7 +346,7 @@ namespace Movement
 			enemies = new List<Enemy>();
 			gameover = new GameOver();
 			gameclear = new GameClear();
-			;
+			
 			
 			for (int i = 0; i < 10; i++) 
 			{
@@ -365,6 +356,13 @@ namespace Movement
 				e.Position.X = xpos;
 				enemies.Add(e);
 				AddChild(e);
+			}
+
+			xpositions = new List<int>(10);
+			for (int i = 0; i < 10; i++)
+			{
+				int xpos = i * 128 + 64;
+				
 			}
 		}
 
